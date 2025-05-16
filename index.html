@@ -3,19 +3,79 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mini Reprodutor de GIFs</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>GIF Player</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    h1 {
+      color: #00ffe1;
+      margin-bottom: 1rem;
+    }
+
+    input {
+      padding: 0.5rem;
+      border-radius: 5px;
+      border: none;
+      margin-bottom: 1rem;
+      width: 300px;
+      max-width: 90%;
+      font-size: 1rem;
+    }
+
+    .gif-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .gif-container img {
+      width: 100%;
+      border-radius: 10px;
+      transition: transform 0.3s;
+    }
+
+    .gif-container img:hover {
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Mini Reprodutor de GIFs</h1>
-    <div class="search">
-      <input type="text" id="searchInput" placeholder="Digite um tema...">
-      <button onclick="searchGIFs()">Buscar</button>
-    </div>
-    <div id="gifGallery" class="gallery"></div>
-  </div>
+  <h1>GIF Player</h1>
+  <input type="text" id="searchInput" placeholder="Digite algo para buscar GIFs" />
+  <div class="gif-container" id="gifContainer"></div>
 
-  <script src="script.js"></script>
+  <script>
+    const API_KEY = 'dc6zaTOxFJmzC'; // Chave pública de teste
+    const searchInput = document.getElementById('searchInput');
+    const gifContainer = document.getElementById('gifContainer');
+
+    searchInput.addEventListener('keyup', async (e) => {
+      if (e.key === 'Enter') {
+        const query = searchInput.value.trim();
+        if (!query) return;
+        const url = `https://api.giphy.com/v1/gifs/search?api_key=${API_KEY}&q=${query}&limit=12&rating=g`;
+        const res = await fetch(url);
+        const data = await res.json();
+
+        gifContainer.innerHTML = '';
+        data.data.forEach(gif => {
+          const img = document.createElement('img');
+          img.src = gif.images.fixed_height.url;
+          img.alt = gif.title;
+          gifContainer.appendChild(img);
+        });
+      }
+    });
+  </script>
 </body>
 </html>
